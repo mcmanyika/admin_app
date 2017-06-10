@@ -107,7 +107,16 @@ $queryString_usr = sprintf("&totalRows_usr=%d%s", $totalRows_usr, $queryString_u
   box-sizing: border-box;
 }
 
-
+#myInput {
+  background-image: url('/css/searchicon.png');
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
 
 #myTable {
   border-collapse: collapse;
@@ -200,7 +209,6 @@ function myFunction() {
   
   <div data-role="panel" id="defaultpanel" data-theme="b">
     <div class="panel-content">
-    <h1><button type="button" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Daily Stats</button></h1>
       <h1><button type="button" style="background-color:#093 !important" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Add New Member</button></h1>
      	
     </div><!-- /content wrapper for padding -->

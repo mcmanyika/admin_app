@@ -37,9 +37,10 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
-  $insertSQL = sprintf("INSERT INTO users (fname, lname) VALUES (%s, %s)",
+  $insertSQL = sprintf("INSERT INTO users (fname, lname, phone) VALUES (%s, %s, %s)",
                        GetSQLValueString($_POST['fname'], "text"),
-                       GetSQLValueString($_POST['lname'], "text"));
+                       GetSQLValueString($_POST['lname'], "text"),
+					   GetSQLValueString($_POST['phone'], "text"));
 
   mysql_select_db($database_connection, $connection);
   $Result1 = mysql_query($insertSQL, $connection) or die(mysql_error());
@@ -69,6 +70,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
         <form method="post" name="form1" action="<?php echo $editFormAction; ?>">
           <div class="col-lg-12"><input type="text" name="fname" value="" size="32" placeholder="First Name"></div>
            <div class="col-lg-12"><input type="text" name="lname" value="" size="32" placeholder="Last Name"></div>
+           <div class="col-lg-12"><input type="text" name="phone" value="" size="32" placeholder="Phone"></div>
            <div class="col-lg-12"><input type="submit" class="btn btn-lg" value="Save Member"></div>
            
           <input type="hidden" name="MM_insert" value="form1">
