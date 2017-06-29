@@ -57,7 +57,7 @@
  
 <div data-role="page" id="page1">
   <div data-role="header">
-    <h1>HIM Finance Dashboard</h1>
+    <h1><a href="../index.php" data-role="button"  data-inline="true" data-icon="home" data-transition="flip" style="text-transform:capitalize">HIM Finance Dashboard</a></h1>
   </div>
   <div role="main" class="ui-content">
   <div class="col-xs-12"><!-- TemplateBeginIf cond="OptionalRegion2" --><!-- TemplateBeginEditable name="EditRegion5" -->
@@ -76,8 +76,11 @@
   
   <div data-role="panel" id="defaultpanel" data-theme="b">
     <div class="panel-content">
+    <button type="button"><a href="../index.php">Home</a></button>
+    <button type="button" class="btn btn-info btn-lg btn-success"><a href="../stats.php">Daily Stats</a></button>
+      <button type="button" style="background-color:#093 !important" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Add New Member</button>
 	<!-- TemplateBeginIf cond="OptionalRegion1" --><!-- TemplateBeginEditable name="EditRegion4" -->
-      <h1><button type="button" style="background-color:#093 !important" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Add New Member</button></h1>
+    
      	<!-- TemplateEndEditable --><!-- TemplateEndIf -->
     </div><!-- /content wrapper for padding -->
   </div><!-- /defaultpanel -->

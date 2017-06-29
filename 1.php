@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Test</title>
+    <script language="VBScript">
+        sub Print()
+            OLECMDID_PRINT = 6
+            OLECMDEXECOPT_DONTPROMPTUSER = 2
+            OLECMDEXECOPT_PROMPTUSER = 1
+            call WB.ExecWB(OLECMDID_PRINT, OLECMDEXECOPT_DONTPROMPTUSER,1)
+        End Sub
+        document.write "<object id='WB' width='0' height='0' classid='CLSID:8856F961-340A-11D0-A96B-00C04FD705A2'></object>"
+    </script>
+</head>
+<body>
+    <object id="WebBrowser1" width="0" height="0" classid="CLSID:8856F961-340A-11D0-A96B-00C04FD705A2"> </object>
+    <a href="#" onclick="Print()">Click Here to Print</a>
+</body>
+</html>

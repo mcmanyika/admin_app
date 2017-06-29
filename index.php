@@ -54,7 +54,41 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
   header(sprintf("Location: %s", $insertGoTo));
 }
 
+if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form2")) {
+  $insertSQL = sprintf("INSERT INTO t_pmFlag (id) VALUES (%s)",
+                       GetSQLValueString($_POST['id'], "int"));
+
+  mysql_select_db($database_connection, $connection);
+  $Result1 = mysql_query($insertSQL, $connection) or die(mysql_error());
+
+  $insertGoTo = 'pay.php?recordID=';
+  if (isset($_SERVER['QUERY_STRING'])) {
+    $insertGoTo .= (strpos($insertGoTo, '?')) ? "&" : "?";
+    $insertGoTo .= $_SERVER['QUERY_STRING'];
+  }
+  header(sprintf("Location: %s", $insertGoTo));
+}
+
 $maxRows_usr = 10;
+$pageNum_usr = 0;
+if (isset($_GET['pageNum_usr'])) {
+  $pageNum_usr = $_GET['pageNum_usr'];
+}
+$startRow_usr = $pageNum_usr * $maxRows_usr;
+
+mysql_select_db($database_connection, $connection);
+$query_usr = "SELECT * FROM users ORDER BY id DESC";
+$query_limit_usr = sprintf("%s LIMIT %d, %d", $query_usr, $startRow_usr, $maxRows_usr);
+$usr = mysql_query($query_limit_usr, $connection) or die(mysql_error());
+$row_usr = mysql_fetch_assoc($usr);
+
+if (isset($_GET['totalRows_usr'])) {
+  $totalRows_usr = $_GET['totalRows_usr'];
+} else {
+  $all_usr = mysql_query($query_usr);
+  $totalRows_usr = mysql_num_rows($all_usr);
+}
+$totalPages_usr = ceil($totalRows_usr/$maxRows_usr)-1;$maxRows_usr = 10;
 $pageNum_usr = 0;
 if (isset($_GET['pageNum_usr'])) {
   $pageNum_usr = $_GET['pageNum_usr'];
@@ -92,22 +126,33 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 $queryString_usr = sprintf("&totalRows_usr=%d%s", $totalRows_usr, $queryString_usr);
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="en"><!-- InstanceBegin template="/Templates/base.dwt.php" codeOutsideHTMLIsLocked="false" -->
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HIM Finance Dashboard</title>
-  <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <script src="js/jquery-1.10.2.min.js"></script>
-  <script src="js/jquery.mobile-1.4.5.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>HIM Finance Dashboard</title>
+<!-- InstanceEndEditable -->
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script src="js/jquery-1.10.2.min.js"></script>
+<script src="js/jquery.mobile-1.4.5.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<style>
 * {
   box-sizing: border-box;
 }
 
-
+#myInput {
+  background-image: url('/css/searchicon.png');
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
 
 #myTable {
   border-collapse: collapse;
@@ -129,50 +174,68 @@ $queryString_usr = sprintf("&totalRows_usr=%d%s", $totalRows_usr, $queryString_u
   background-color: #f1f1f1;
 }
 </style>
+<!-- InstanceBeginEditable name="head" -->
+  
+<!-- InstanceEndEditable -->
+<!-- InstanceParam name="OptionalRegion1" type="boolean" value="true" -->
+<!-- InstanceParam name="OptionalRegion2" type="boolean" value="true" -->
+<!-- InstanceParam name="OptionalRegion3" type="boolean" value="true" -->
 </head>
 <body>
  
 <div data-role="page" id="page1">
   <div data-role="header">
-    <h1>HIM Finance Dashboard</h1>
+    <h1><a href="index.php" data-role="button"  data-inline="true" data-icon="home" data-transition="flip" style="text-transform:capitalize">HIM Finance Dashboard</a></h1>
   </div>
   <div role="main" class="ui-content">
-  <div class="col-xs-12"><a href="#defaultpanel" data-role="button" data-inline="true" data-icon="bars">Browse Links</a>
-<input type="text" class="form-control input-lg" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+  <div class="col-xs-12"><!-- InstanceBeginEditable name="EditRegion5" -->
+  <div class="col-md-3">
+  	<a href="#defaultpanel" data-role="button" data-inline="true" data-icon="bars" style="background-color:#093; color:#fff !important">Browse Links</a>
+    </div>
+   <div class="col-md-3">
+     <button type="button" onClick="window.location.reload();" data-icon="refresh">Refresh Page</button>
+     </div>
+  <!-- InstanceEndEditable -->
   
-    <table id="myTable" width="100%">
-      <tr class="header">
-        <th style="width:60%;">Name</th>
-        <th style="width:40%;">Phone</th>
-        </tr>
-        
-      <?php do { ?>
+  <!-- InstanceBeginEditable name="container" -->
+ <div class="col-md-12">
+  <input type="text" class="form-control input-lg" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+  
+  <table id="myTable" width="100%">
+    <tr class="header">
+      <th style="width:50%;">Name</th>
+      <th style="width:40%;">Phone</th>
+      <th style="width:00%;"></th>
+      </tr>
+    
+    <?php do { ?>
       <tr>
-        <td style="text-transform:capitalize"><a href="pay.php?recordID=<?php echo $row_usr['id']; ?>"><?php echo $row_usr['fname']; ?> <?php echo $row_usr['lname']; ?></a></td>
+        <td style="text-transform:capitalize"></span><a href="pay.php?recordID=<?php echo $row_usr['id']; ?>"  data-transition="slide"><?php echo $row_usr['fname']; ?> <?php echo $row_usr['lname']; ?></a></td>
         <td><a href="pay.php?recordID=<?php echo $row_usr['id']; ?>"><?php echo $row_usr['phone']; ?></a></td>
+       <td><a href="acct_delete.php?id=<?php echo $row_usr['id']; ?>">Delete</a></td>
         </tr>
-     
-        <?php } while ($row_usr = mysql_fetch_assoc($usr)); ?>
+      
+      <?php } while ($row_usr = mysql_fetch_assoc($usr)); ?>
     </table>
-    <br>
-    <table border="0">
-      <tr>
-        <td><?php if ($pageNum_usr > 0) { // Show if not first page ?>
-            <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, 0, $queryString_usr); ?>">First</a>
-            <?php } // Show if not first page ?></td>
-        <td><?php if ($pageNum_usr > 0) { // Show if not first page ?>
-            <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, max(0, $pageNum_usr - 1), $queryString_usr); ?>">Previous</a>
-            <?php } // Show if not first page ?></td>
-        <td><?php if ($pageNum_usr < $totalPages_usr) { // Show if not last page ?>
-            <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, min($totalPages_usr, $pageNum_usr + 1), $queryString_usr); ?>">Next</a>
-            <?php } // Show if not last page ?></td>
-        <td><?php if ($pageNum_usr < $totalPages_usr) { // Show if not last page ?>
-            <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, $totalPages_usr, $queryString_usr); ?>">Last</a>
-            <?php } // Show if not last page ?></td>
+  <br>
+  <table border="0">
+    <tr>
+      <td><?php if ($pageNum_usr > 0) { // Show if not first page ?>
+        <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, 0, $queryString_usr); ?>">First</a>
+        <?php } // Show if not first page ?></td>
+      <td><?php if ($pageNum_usr > 0) { // Show if not first page ?>
+        <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, max(0, $pageNum_usr - 1), $queryString_usr); ?>">Previous</a>
+        <?php } // Show if not first page ?></td>
+      <td><?php if ($pageNum_usr < $totalPages_usr) { // Show if not last page ?>
+        <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, min($totalPages_usr, $pageNum_usr + 1), $queryString_usr); ?>">Next</a>
+        <?php } // Show if not last page ?></td>
+      <td><?php if ($pageNum_usr < $totalPages_usr) { // Show if not last page ?>
+        <a href="<?php printf("%s?pageNum_usr=%d%s", $currentPage, $totalPages_usr, $queryString_usr); ?>">Last</a>
+        <?php } // Show if not last page ?></td>
       </tr>
     </table>
-Records <?php echo ($startRow_usr + 1) ?> to <?php echo min($startRow_usr + $maxRows_usr, $totalRows_usr) ?> of <?php echo $totalRows_usr ?> 
-<script>
+  Records <?php echo ($startRow_usr + 1) ?> to <?php echo min($startRow_usr + $maxRows_usr, $totalRows_usr) ?> of <?php echo $totalRows_usr ?> 
+  <script>
 function myFunction() {
   var input, filter, table, tr, td, i;
   input = document.getElementById("myInput");
@@ -191,18 +254,24 @@ function myFunction() {
   }
 }
 </script>
+  
+ </div> 
 
-
-</div><!-- /grid-a -->
+<!-- InstanceEndEditable -->
+ 
+  </div><!-- /grid-a -->
     
   </div>
   
   
   <div data-role="panel" id="defaultpanel" data-theme="b">
     <div class="panel-content">
-    <h1><button type="button" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Daily Stats</button></h1>
-      <h1><button type="button" style="background-color:#093 !important" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Add New Member</button></h1>
-     	
+    <button type="button"><a href="index.php">Home</a></button>
+    <button type="button" class="btn btn-info btn-lg btn-success"><a href="stats.php">Daily Stats</a></button>
+      <button type="button" style="background-color:#093 !important" class="btn btn-info btn-lg btn-success" data-toggle="modal" data-target="#myModal">Add New Member</button>
+	<!-- InstanceBeginEditable name="EditRegion4" -->
+    
+     	<!-- InstanceEndEditable -->
     </div><!-- /content wrapper for padding -->
   </div><!-- /defaultpanel -->
 </div>
@@ -210,24 +279,29 @@ function myFunction() {
    <!-- defaultpanel  -->
 
 <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-body">
-            <div style="height:210px">
-              <iframe src="add_member.php" width="100%" height="200px" frameborder="0"></iframe>
-          	</div>
-        </div>
-        <div class="modal-footer">
-        <button type="button" onclick="javascript:window.location.reload()" class="close" data-dismiss="modal" aria-hidden="true">Close</button>
-          
-       </div>
-      </div>
-     </div>
-    </div> 
+<div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+              <div class="modal-content">
+                    <div class="modal-body">
+                        <div style="height:210px">
+                          <iframe src="add_member.php" width="100%" height="200px" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" onclick="javascript:window.location.reload()" class="close" data-dismiss="modal" aria-hidden="true">          Close</button>
+                   </div>
+              </div>
+         </div>
+    </div>
+ 
+    
+<!-- InstanceBeginEditable name="EditRegion6" -->
+
+  <!-- InstanceEndEditable -->  
+     
 </body>
-</html>
+<!-- InstanceEnd --></html>
 <?php
 mysql_free_result($usr);
 ?>
